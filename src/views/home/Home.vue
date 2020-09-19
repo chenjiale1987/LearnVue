@@ -72,14 +72,29 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+    },
+    mounted(){
+      //局部变量被引用时不会销毁
+      const refresh = this.debounce(this.$refs.scroll.refresh,300)
       this.$bus.$on('itemImageLoad',()=>{
-        this.$refs.scroll.refresh()
+        // this.$refs.scroll.refresh()
+        refresh()
       })
     },
     methods:{
       /**
        * 事件监听相关的方法
        */
+      debounce(func,delay){
+        //局部变量被引用时不会销毁
+        let timer = null
+        return (...args) => {
+          if(timer) clearTimeout(timer)
+          timer = setTimeout(() => {
+            func.apply(this,args)
+          }, delay)
+        }
+      },
       tabClick(index) {
         switch (index) {
           case 0:
