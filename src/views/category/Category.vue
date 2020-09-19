@@ -1,7 +1,10 @@
 <template>  
   <div class="wrapper">
+    <!-- 无论是否设置click：false,button都可以点击 -->
+    <button @click="btnClick">按钮</button> 
+    <!-- 必须设置click：true，那么div才能监听点击 -->
+    <div @click="divClick">呵呵</div>
     <ul>     
-      <button @click="btnClick">按钮</button> 
       <li>分类列表1</li>
       <li>分类列表2</li>
       <li>分类列表3</li>
@@ -116,7 +119,7 @@
       //3：只要是滚动就侦测
       const bscroll = new BScroll('.wrapper',{
         probeType:3,
-        // click:false,
+        click:true,
         pullUpLoad:true
       })
       bscroll.on('scroll',(position)=>{
@@ -133,6 +136,9 @@
     methods:{
       btnClick(){
         console.log('btnClick')
+      },
+      divClick(){
+        console.log('divClick')
       }
     }
   }
