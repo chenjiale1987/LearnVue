@@ -3,18 +3,24 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+    <tab-control 
+        :titles="['流行', '新款', '精选']"
+        @tabClick="tabClick" ref="tabControl1" class="tab-control" v-show="isTabFixed"/>
     <scroll class="content" 
             ref="scroll" 
             :probe-type="3" 
             @scroll="contentScroll"
             :pull-up-load="true"
             @pullingUp="loadMore">
-      <home-swiper :banners="banners"/>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"/>
       <recommend-view :recommends="recommends"/>
       <feature-view/>
-      <tab-control class="tab-control" 
+      <!-- class="tab-control"  -->
+      <!-- 外层有translate时不可用 -->
+      <!-- :class="{fixed:isTabFixed}" -->
+      <tab-control 
         :titles="['流行', '新款', '精选']"
-        @tabClick="tabClick"/>
+        @tabClick="tabClick" ref="tabControl2" />        
       <good-list :goods="showGoods"/>               
     </scroll>
     <!-- @click.native 组件点击 -->
@@ -34,6 +40,7 @@
   import BackTop from 'components/content/backTop/BackTop'
 
   import {getHomeMultidata, getHomeGoods} from 'network/home'
+  import {debounce} from 'common/utils'
 
   export default {
     name: "Home",
@@ -57,7 +64,9 @@
           'sell': {page: 0, list: []},
         },
         currentType: 'pop',
-        isShowBackTop:false
+        isShowBackTop:false,
+        tabOffsetTop:0,
+        isTabFixed:false
       }
     },
     computed: {
@@ -75,26 +84,16 @@
     },
     mounted(){
       //局部变量被引用时不会销毁
-      const refresh = this.debounce(this.$refs.scroll.refresh,300)
+      const refresh = debounce(this.$refs.scroll.refresh,300)
       this.$bus.$on('itemImageLoad',()=>{
         // this.$refs.scroll.refresh()
         refresh()
-      })
+      })      
     },
     methods:{
       /**
        * 事件监听相关的方法
        */
-      debounce(func,delay){
-        //局部变量被引用时不会销毁
-        let timer = null
-        return (...args) => {
-          if(timer) clearTimeout(timer)
-          timer = setTimeout(() => {
-            func.apply(this,args)
-          }, delay)
-        }
-      },
       tabClick(index) {
         switch (index) {
           case 0:
@@ -107,17 +106,29 @@
             this.currentType = 'sell'
             break
         }
+        //不管点击哪个tabcontrol都把另外的选中当前index
+        this.$refs.tabControl1.currentIndex=index
+        this.$refs.tabControl2.currentIndex=index
       },    
       backClick() {
         this.$refs.scroll.scrollTo(0, 0)
       },
       contentScroll(position){
         // console.log(position)
+        //判断backTop是否显示
         this.isShowBackTop = -position.y > 1000
+        //判断tabControl是否吸顶
+        this.isTabFixed = -position.y > this.tabOffsetTop
       },
       loadMore(){
         // console.log('上啦加载更多') 
         this.getHomeGoods(this.currentType)
+      },
+      swiperImageLoad(){
+        //图片加载完后取offsetTop
+        // console.log('swiperImageLoad')
+        this.tabOffsetTop=this.$refs.tabControl2.$el.offsetTop
+        // console.log(this.tabOffsetTop)
       },
       /**
        * 网络请求相关的方法
@@ -141,23 +152,33 @@
 </script>
 
 <style scoped>
-  /* #home{ */
-    /* padding-top:44px; */
-    /* height: 100vh; */
-    /* position: relative; */
-  /* } */
+   /* #home{ 
+    padding-top:44px;
+    height: 100vh;
+    position: relative;
+   } */
   .home-nav {
     background-color: var(--color-tint);
     color:#fff;
-    position:fixed;
+
+    /* 在浏览器使用原生滚动时 */
+    /* position:fixed;
     left:0;
     right:0;
     top:0;
-    z-index: 9;
+    z-index: 9; */
   }
-  .tab-control {
+
+  /* 原生滚动时有用，但有兼容性问题 */
+  /* .tab-control {
     position: sticky;
+    position: relative;
     top: 44px;
+    z-index: 9;
+  } */
+
+  .tab-control {
+    position: relative;
     z-index: 9;
   }
   .content {    
@@ -168,4 +189,10 @@
     left: 0;
     right: 0;
   }
+  /* .fixed{
+    position: fixed;
+    left:0;
+    right:0;
+    top: 44px;
+  } */
 </style>
