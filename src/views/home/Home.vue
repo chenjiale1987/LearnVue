@@ -66,7 +66,8 @@
         currentType: 'pop',
         isShowBackTop:false,
         tabOffsetTop:0,
-        isTabFixed:false
+        isTabFixed:false,
+        // saveY:0
       }
     },
     computed: {
@@ -74,6 +75,18 @@
         return this.goods[this.currentType].list       
       },
     },
+    destroyed(){
+      console.log('Home destroyed')
+    },    
+    // 切换页面时滚动位置丢失时问题解决思路
+    // activated(){
+    //   console.log('activated')
+    //   this.$refs.scroll.scrollTo(0,this.saveY,0)
+    // },
+    // deactivated(){
+    //   console.log('deactivated')
+    //   this.saveY = this.$refs.scroll.getScrollY()
+    // },
     created(){
       //请求多个数据
       this.getHomeMultidata()

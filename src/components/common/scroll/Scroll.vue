@@ -50,6 +50,9 @@
       refresh(){
         console.log('--------')
         this.scroll.refresh()
+      },
+      getScrollY(){
+        return this.scroll.y
       }
     }
   }
