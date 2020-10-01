@@ -1,18 +1,17 @@
 import {request} from './request'
+const baseURL='http://152.136.185.210:8000/api/w6'
 export function getHomeMultidata(){
-    const baseURL1='http://123.207.32.32:8000'
     return request({
         url:'/home/multidata'
-    },baseURL1)
+    },baseURL)
 }
 
 export function getHomeGoods(type, page){
-    const baseURL1='http://localhost:2018'
     return request({
         url: '/home/data',
         params: {
         type,
         page
         }
-    },baseURL1)
+    },baseURL)
 }

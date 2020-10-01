@@ -1,10 +1,10 @@
 <template>
   <div class="goods-item" @click="itemClick">
-      <img :src="goodsItem.ImageUrl" alt="" @load="imageLoad">
+      <img :src="goodsItem.show.img" alt="" @load="imageLoad">
       <div class="goods-info">
-          <p>{{goodsItem.Title}}</p>
-          <span class="price">{{goodsItem.Price}}</span>
-          <span class="collect">100</span>
+          <p>{{goodsItem.title}}</p>
+          <span class="price">{{goodsItem.price}}</span>
+          <span class="collect">{{goodsItem.cfav}}</span>
       </div>
   </div>      
 </template>
@@ -26,7 +26,7 @@
         this.$bus.$emit('itemImageLoad')
       },
       itemClick(){
-        this.$router.push('/detail/'+this.goodsItem.Id)        
+        this.$router.push('/detail/'+this.goodsItem.iid)        
       }
     }
   }
