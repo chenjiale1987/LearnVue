@@ -6,6 +6,7 @@
         <detail-base-info :goods="goods"/>
         <detail-shop-info :shop="shop"/>
         <detail-goods-info :detail-info="detailInfo" :imageLoad="imageLoad"/>
+        <detail-param-info :param-info="paramInfo"/>
       </scroll>
   </div>
 </template>
@@ -14,11 +15,12 @@
   import DetailNavBar from './childComps/DetailNavBar'
   import DetailSwiper from './childComps/DetailSwiper'
   import DetailBaseInfo from './childComps/DetailBaseInfo'
-  import DetailShopInfo from './childComps/DetailShopInfo'
-  import Scroll from 'components/common/scroll/Scroll'
+  import DetailShopInfo from './childComps/DetailShopInfo'  
   import DetailGoodsInfo from './childComps/DetailGoodsInfo'
-  import {getDetail,Goods,Shop} from 'network/detail'
-  import {debounce} from 'common/utils'
+  import DetailParamInfo from './childComps/DetailParamInfo'
+
+  import Scroll from 'components/common/scroll/Scroll'
+  import {getDetail,Goods,Shop,GoodsParam} from 'network/detail'
   
   export default {
     name: "Detail",
@@ -28,6 +30,7 @@
         DetailBaseInfo,
         DetailShopInfo,
         DetailGoodsInfo,
+        DetailParamInfo,
         Scroll
     },
     data(){
@@ -36,7 +39,8 @@
             topImages:[],
             goods:{},
             shop:{},
-            detailInfo:{}
+            detailInfo:{},
+            paramInfo:{}
         }
     },
     created(){
@@ -44,10 +48,16 @@
         getDetail(this.id).then(res=>{
             console.log(res)
             const data=res.result;            
+            //获取图片轮播数据
             this.topImages=data.itemInfo.topImages;
+            //获取商品信息
             this.goods=new Goods(data.itemInfo,data.columns,data.shopInfo.services)
+            //获取店铺信息
             this.shop=new Shop(data.shopInfo)
+            //获取商品详情
             this.detailInfo=data.detailInfo
+            //获取商品参数信息
+            this.paramInfo=new GoodsParam(data.itemParams.info,data.itemParams.rule)
         })
     },
     mounted(){
