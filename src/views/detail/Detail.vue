@@ -5,6 +5,7 @@
         <detail-swiper :top-images="topImages"/>
         <detail-base-info :goods="goods"/>
         <detail-shop-info :shop="shop"/>
+        <detail-goods-info :detail-info="detailInfo" :imageLoad="imageLoad"/>
       </scroll>
   </div>
 </template>
@@ -15,6 +16,7 @@
   import DetailBaseInfo from './childComps/DetailBaseInfo'
   import DetailShopInfo from './childComps/DetailShopInfo'
   import Scroll from 'components/common/scroll/Scroll'
+  import DetailGoodsInfo from './childComps/DetailGoodsInfo'
   import {getDetail,Goods,Shop} from 'network/detail'
   import {debounce} from 'common/utils'
   
@@ -25,6 +27,7 @@
         DetailSwiper,
         DetailBaseInfo,
         DetailShopInfo,
+        DetailGoodsInfo,
         Scroll
     },
     data(){
@@ -32,23 +35,30 @@
             id:null,
             topImages:[],
             goods:{},
-            shop:{}
+            shop:{},
+            detailInfo:{}
         }
     },
     created(){
         this.id=this.$route.params.iid
         getDetail(this.id).then(res=>{
-            const data=res.result;
+            console.log(res)
+            const data=res.result;            
             this.topImages=data.itemInfo.topImages;
             this.goods=new Goods(data.itemInfo,data.columns,data.shopInfo.services)
             this.shop=new Shop(data.shopInfo)
+            this.detailInfo=data.detailInfo
         })
     },
     mounted(){
-      const refresh = debounce(this.$refs.scroll.refresh,300)
       this.$bus.$on('itemImageLoad',()=>{
-        refresh()
+        this.$refs.scroll.refresh()
       })
+    },
+    methods:{
+      imageLoad(){
+        this.$refs.scroll.refresh()
+      }
     }
   }
 </script>
