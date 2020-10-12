@@ -1,14 +1,14 @@
 <template>
   <div id="detail">
-      <detail-nav-bar class="detail-nav"/>
+      <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
       <scroll ref="scroll" class="content">
-        <detail-swiper :top-images="topImages"/>
+        <detail-swiper ref="base" :top-images="topImages"/>
         <detail-base-info :goods="goods"/>
         <detail-shop-info :shop="shop"/>
         <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"/>
-        <detail-param-info :param-info="paramInfo"/>
-        <detail-comment-info :comment-info="commentInfo"/>
-        <goods-list :goods="recommends"/>
+        <detail-param-info ref="param" :param-info="paramInfo"/>
+        <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+        <goods-list ref="recommend" :goods="recommends"/>
       </scroll>
   </div>
 </template>
@@ -26,6 +26,7 @@
   import GoodsList from 'components/content/goods/GoodsList'
   import {getDetail,getRecommend,Goods,Shop,GoodsParam} from 'network/detail'
   import {itemListenerMixin} from 'common/mixin'
+  import {debounce} from 'common/utils'
   
   export default {
     name: "Detail",
@@ -50,7 +51,9 @@
             detailInfo:{},
             paramInfo:{},
             commentInfo:{},
-            recommends:[]
+            recommends:[],
+            themeTops: [],
+            getThemeTopY:null
         }
     },
     created(){
@@ -71,17 +74,46 @@
             //获取评论信息
             if(data.rate.cRate !== 0){
               this.commentInfo=data.rate.list[0]
-            }            
+            }  
+            // 问题：在哪里才能获取到正确的offsetTop
+            // 1.created肯定不行，不能获取元素
+            // 2.mounted也不行，数据还没获取到
+            // 3.获取到数据的回调中也不行，DOM还没渲染完
+            // 4.$nextTick也不行，图片没有加载完
+
+            // this.$nextTick(()=>{
+            //   this.themeTops = []
+            //   this.themeTops.push(this.$refs.base.$el.offsetTop)
+            //   this.themeTops.push(this.$refs.param.$el.offsetTop)
+            //   this.themeTops.push(this.$refs.comment.$el.offsetTop)
+            //   this.themeTops.push(this.$refs.recommend.$el.offsetTop)
+            //   console.log(this.themeTops)
+            // })            
         })
         getRecommend().then(res=>{
           this.recommends=res.data.list
         })
+
+        this.getThemeTopY = debounce(()=>{
+          this.themeTops = []
+          this.themeTops.push(this.$refs.base.$el.offsetTop-44)
+          this.themeTops.push(this.$refs.param.$el.offsetTop-44)
+          this.themeTops.push(this.$refs.comment.$el.offsetTop-44)
+          this.themeTops.push(this.$refs.recommend.$el.offsetTop-44)
+          console.log(this.themeTops)
+        },300)
     },
     mounted(){
+    },
+    updated(){      
     },
     methods:{
       imageLoad(){        
         this.$refs.scroll.refresh()        
+        this.getThemeTopY()        
+      },
+      titleClick(index){
+        this.$refs.scroll.scrollTo(0, -this.themeTops[index], 100)
       }
     },
     destroyed(){
