@@ -11,8 +11,9 @@
         <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"/>
         <detail-param-info ref="param" :param-info="paramInfo"/>
         <detail-comment-info ref="comment" :comment-info="commentInfo"/>
-        <goods-list ref="recommend" :goods="recommends"/>
+        <goods-list ref="recommend" :goods="recommends"/>        
       </scroll>
+      <detail-bottom-bar/>
   </div>
 </template>
 
@@ -24,6 +25,7 @@
   import DetailGoodsInfo from './childComps/DetailGoodsInfo'
   import DetailParamInfo from './childComps/DetailParamInfo'
   import DetailCommentInfo from './childComps/DetailCommentInfo'
+  import DetailBottomBar from './childComps/DetailBottomBar'
 
   import Scroll from 'components/common/scroll/Scroll'
   import GoodsList from 'components/content/goods/GoodsList'
@@ -41,6 +43,7 @@
         DetailGoodsInfo,
         DetailParamInfo,
         DetailCommentInfo,
+        DetailBottomBar,
         Scroll,
         GoodsList
     },
@@ -130,6 +133,7 @@
             if(this.currentIndex !== i){
               this.currentIndex = i
               this.$refs.nav.currentIndex=this.currentIndex
+              break
             }              
           }
         }
