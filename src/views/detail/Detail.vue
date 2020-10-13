@@ -1,7 +1,10 @@
 <template>
   <div id="detail">
-      <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
-      <scroll ref="scroll" class="content">
+      <detail-nav-bar ref="nav" class="detail-nav" @titleClick="titleClick"/>
+      <scroll ref="scroll" 
+        class="content" 
+        @scroll="contentScroll"
+        :probe-type="3">
         <detail-swiper ref="base" :top-images="topImages"/>
         <detail-base-info :goods="goods"/>
         <detail-shop-info :shop="shop"/>
@@ -53,7 +56,8 @@
             commentInfo:{},
             recommends:[],
             themeTops: [],
-            getThemeTopY:null
+            getThemeTopY:null,
+            currentIndex: 0
         }
     },
     created(){
@@ -100,7 +104,7 @@
           this.themeTops.push(this.$refs.param.$el.offsetTop-44)
           this.themeTops.push(this.$refs.comment.$el.offsetTop-44)
           this.themeTops.push(this.$refs.recommend.$el.offsetTop-44)
-          console.log(this.themeTops)
+          this.themeTops.push(Number.MAX_VALUE)
         },300)
     },
     mounted(){
@@ -114,6 +118,21 @@
       },
       titleClick(index){
         this.$refs.scroll.scrollTo(0, -this.themeTops[index], 100)
+      },
+      contentScroll(position){
+        this._listenScrollTheme(-position.y)
+      },
+      _listenScrollTheme(position){
+        let length = this.themeTops.length;
+        for (let i = 0; i < length; i++){
+          let iPos = this.themeTops[i];
+          if (position >= iPos && position < this.themeTops[i+1]){
+            if(this.currentIndex !== i){
+              this.currentIndex = i
+              this.$refs.nav.currentIndex=this.currentIndex
+            }              
+          }
+        }
       }
     },
     destroyed(){
