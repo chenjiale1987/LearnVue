@@ -13,7 +13,7 @@
         <detail-comment-info ref="comment" :comment-info="commentInfo"/>
         <goods-list ref="recommend" :goods="recommends"/>               
       </scroll>
-      <detail-bottom-bar/>
+      <detail-bottom-bar @addToCart="addToCart"/>
       <back-top @click.native="backClick" v-show="isShowBackTop"/> 
   </div>
 </template>
@@ -139,6 +139,15 @@
             }              
           }
         }
+      },
+      addToCart(){
+        const obj = {}
+        obj.iid = this.id
+        obj.imgURL = this.topImages[0]
+        obj.title = this.goods.title
+        obj.desc = this.goods.desc
+        obj.newPrice = this.goods.realPrice
+        this.$store.commit('addCart',obj)
       }
     },
     destroyed(){
