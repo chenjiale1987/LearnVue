@@ -13,3 +13,20 @@ export const itemListenerMixin = {
     this.$bus.$on('itemImageLoad',this.itemImgListener)
   }
 }
+
+import BackTop from 'components/content/backTop/BackTop'
+export const tabControlMixin = {
+  components:{
+    BackTop
+  },
+  data(){
+    return {
+      isShowBackTop:false
+    }
+  },
+  methods:{
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0)
+    }
+  }
+}

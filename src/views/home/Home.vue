@@ -37,10 +37,9 @@
   import TabControl from 'components/content/tabControl/TabControl'
   import GoodList from 'components/content/goods/GoodsList'
   import Scroll from 'components/common/scroll/Scroll'
-  import BackTop from 'components/content/backTop/BackTop'
 
   import {getHomeMultidata, getHomeGoods} from 'network/home'
-  import {itemListenerMixin} from 'common/mixin'
+  import {itemListenerMixin,tabControlMixin} from 'common/mixin'
 
   export default {
     name: "Home",
@@ -51,10 +50,9 @@
       NavBar,
       TabControl,
       GoodList,
-      Scroll,
-      BackTop
+      Scroll
     },
-    mixins:[itemListenerMixin],
+    mixins:[itemListenerMixin,tabControlMixin],
     data(){
       return {
         banners:[],
@@ -65,7 +63,6 @@
           'sell': {page: 0, list: []},
         },
         currentType: 'pop',
-        isShowBackTop:false,
         tabOffsetTop:0,
         isTabFixed:false,
         // saveY:0
@@ -118,10 +115,7 @@
         //不管点击哪个tabcontrol都把另外的选中当前index
         this.$refs.tabControl1.currentIndex=index
         this.$refs.tabControl2.currentIndex=index
-      },    
-      backClick() {
-        this.$refs.scroll.scrollTo(0, 0)
-      },
+      },      
       contentScroll(position){
         // console.log(position)
         //判断backTop是否显示

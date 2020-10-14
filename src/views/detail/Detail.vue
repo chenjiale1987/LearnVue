@@ -11,9 +11,10 @@
         <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"/>
         <detail-param-info ref="param" :param-info="paramInfo"/>
         <detail-comment-info ref="comment" :comment-info="commentInfo"/>
-        <goods-list ref="recommend" :goods="recommends"/>        
+        <goods-list ref="recommend" :goods="recommends"/>               
       </scroll>
       <detail-bottom-bar/>
+      <back-top @click.native="backClick" v-show="isShowBackTop"/> 
   </div>
 </template>
 
@@ -30,7 +31,7 @@
   import Scroll from 'components/common/scroll/Scroll'
   import GoodsList from 'components/content/goods/GoodsList'
   import {getDetail,getRecommend,Goods,Shop,GoodsParam} from 'network/detail'
-  import {itemListenerMixin} from 'common/mixin'
+  import {itemListenerMixin,tabControlMixin} from 'common/mixin'
   import {debounce} from 'common/utils'
   
   export default {
@@ -47,7 +48,7 @@
         Scroll,
         GoodsList
     },
-    mixins:[itemListenerMixin],
+    mixins:[itemListenerMixin,tabControlMixin],
     data(){
         return {
             id:null,
@@ -124,6 +125,7 @@
       },
       contentScroll(position){
         this._listenScrollTheme(-position.y)
+        this.isShowBackTop = -position.y > 1000
       },
       _listenScrollTheme(position){
         let length = this.themeTops.length;
