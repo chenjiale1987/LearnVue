@@ -14,7 +14,7 @@
         <goods-list ref="recommend" :goods="recommends"/>               
       </scroll>
       <detail-bottom-bar @addToCart="addToCart"/>
-      <back-top @click.native="backClick" v-show="isShowBackTop"/> 
+      <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
 
@@ -30,9 +30,12 @@
 
   import Scroll from 'components/common/scroll/Scroll'
   import GoodsList from 'components/content/goods/GoodsList'
+
   import {getDetail,getRecommend,Goods,Shop,GoodsParam} from 'network/detail'
   import {itemListenerMixin,tabControlMixin} from 'common/mixin'
   import {debounce} from 'common/utils'
+
+  import { mapActions } from 'vuex'
   
   export default {
     name: "Detail",
@@ -116,6 +119,7 @@
     updated(){      
     },
     methods:{
+      ...mapActions(['addCart']),
       imageLoad(){        
         this.$refs.scroll.refresh()        
         this.getThemeTopY()        
@@ -147,7 +151,9 @@
         obj.title = this.goods.title
         obj.desc = this.goods.desc
         obj.newPrice = this.goods.realPrice
-        this.$store.dispatch('addCart',obj)
+        this.addCart(obj).then(res=>{
+           this.$toast.show(res)  
+        })
       }
     },
     destroyed(){
